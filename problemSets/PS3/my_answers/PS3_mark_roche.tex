@@ -101,6 +101,65 @@
 
 \begin{enumerate}
 	\item Construct and interpret an unordered multinomial logit with \texttt{GDPWdiff} as the output and "no change" as the reference category, including the estimated cutoff points and coefficients.
+
+Firstly, run descriptive statistics on the dataset using the summary() function. Then create a table consisting of the X variables OIL and REG to get a more immediate understanding on this data. As you can see below, the vast majority of fuel exports do not exceed 50 percent. By comparison, there is a similar sample of democratic and nn-democratic countries. 
+	
+		\lstinputlisting[language=R, firstline=24,lastline=36]{../my_answers/PS3_mark_roche.R} 
+	
+Now, manipulate the outcome variable to make relevant character categories out of the numeric values. Then, turn it into a factor and set 'no  change' as the reference catgeory. With this complete, create two dummy variables out of both the democratic and OIL predictors. After this, create a new smaller dataset containing the cleaned outcome and predictor variables. This dataset is then ready for unordered multinomil logit.  
+ 
+ 	\lstinputlisting[language=R, firstline=38,lastline=67]{../my_answers/PS3_mark_roche.R} 
+ 	
+ 		\begin{verbatim}
+ 	Table 1: The Unordered Multinomial Regression Output 
+ 	
+ 		Coefficients:
+         (Intercept) large_oilex small_oilex democracy non_democracy
+negative    5.145122    8.385181   -3.240059  3.248796      1.896326
+positive    5.554894    8.486243   -2.931349  3.648636      1.906258
+
+Std. Errors:
+         (Intercept) large_oilex small_oilex democracy non_democracy
+negative   0.1522334   0.0350539   0.1534428 0.4389436     0.3265688
+positive   0.1519580   0.0350539   0.1529560 0.4380432     0.3257614
+
+Residual Deviance: 4678.726 
+AIC: 4690.726 
+ 	\end{verbatim}
+ 
+ Now, interpret the coefficients and cutoff points (i.e. the intercept). 
+ 
+ 	\begin{verbatim}
+ 1) The Coefficients
+ 
+ A one-unit increase in the variable large_oilex is associated with a large increase in log odds of being negative difference between GDP rather than no change GDP difference in the amount of 8.385.
+
+A one-unit increase in the variable large_oilex is associated with a large increase in log odds of being positive difference between GDP rather than no change GDP difference in the amount of 8.486.
+
+A one-unit increase in the variable small_oilex is associated with a decrease in log odds of being negative difference between GDP rather than no change GDP difference in the amount of -3.240
+
+A one-unit increase in the variable small_oilex is associated with a decrease in log odds of being positive difference between GDP rather than no change GDP difference in the amount of -2.931
+
+A one-unit increase in the variable democracy is associated with an increase in log odds of being negative difference between GDP rather than no change GDP difference in the amount of 3.249
+ 
+ A one-unit increase in the variable democracy is associated with an increase in log odds of being positive difference between GDP rather than no change GDP difference 
+in the amount of 3.649
+ 
+ A one-unit increase in the variable non_democracy is associated with a slight increase in log odds of being negative difference between GDP rather than no change GDP difference in the amount of 0.327
+ 
+ A one-unit increase in the variable non_democracy is associated with a slight increase in log odds of being positive difference between GDP rather than no change GDP difference in the amount of 0.326
+ 	
+ 2) The Estimated Cutoff Points:
+ 
+ The intercept for negative GDP diff: when all predictors are at 0, the log odds of there being negative difference between GDP rather than no change GDP difference is associated with an increase in the amount of  5.554894
+ 
+ The intercept for positive GDP diff: when all predictors are at 0, the log odds of there being positive difference between GDP rather than no change GDP difference is associated with an increase in the amount of 5.145122
+ \end{verbatim}
+
+Now, run a z-test and get a p-value to look for significance. Drop any predictor from model that is not signficant. Call this model the final model. Then run a final unordered multinomial regression and reinterpret the output.
+
+	\lstinputlisting[language=R, firstline=117,lastline=159]{../my_answers/PS3_mark_roche.R} 
+	
 	\item Construct and interpret an ordered multinomial logit with \texttt{GDPWdiff} as the outcome variable, including the estimated cutoff points and coefficients.
 	
 	
