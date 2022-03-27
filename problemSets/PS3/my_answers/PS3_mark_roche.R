@@ -216,22 +216,7 @@ large_oilex   democracy
 # (a) Run a Poisson regression because the outcome is a count variable. Is there evidence that PAN 
   # presidential candidates visit swing districts more? Provide a test statistic and p-value.
 dataset <- read.csv('https://raw.githubusercontent.com/ASDS-TCD/StatsII_Spring2022/main/datasets/MexicoMuniData.csv')
-dataset
-# Outcome variable:
-# Variable PAN.visits.06 is a count variable that requires poission regression. 
-dataset$PAN.visits.06
-class(dataset$PAN.visits.06)
-# Predictors:
-# Main predictor of interest is whether the district was highly contested, or whether it was not 
-# (the PAN or their opponents have electoral security) in the previ-ous federal elections during 2000 
-# (competitive.district), which is binary (1=close/swing district, 0=”safe seat”). 
-dataset$competitive.district
-# We also include marginality.06 (a measure of poverty) and PAN.governor.06 (a dummy for whether 
-# the state has a PAN-affiliated governor) as ad-ditional control variables.
-dataset$marginality.06
-dataset$PAN.governor.06
-dataset$swing <- ifelse(dataset$competitive.district == 1, 1, 0)
-dataset$safe <- ifelse(dataset$competitive.district == 0, 1, 0)
+
 
 dataset <- data.frame(PAN.visits.06 = dataset$PAN.visits.06,
                          competitive = dataset$competitive.district,
