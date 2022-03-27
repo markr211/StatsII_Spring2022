@@ -164,39 +164,59 @@ exp(coef(final_model))
   # including the estimated cutoff points and coefficients.
 
 # Order GDPWdiff by levels positive, then no change and finally negative 
-data$GDPWdiff <- factor(data$GDPWdiff, levels = c('positive', 'negative', 'no change'),
-                               labels = c('postive', 'negative', 'no change'))
+data$GDPWdiff <- factor(data$GDPWdiff, levels = c('positive', 'no change', 'negative'),
+                               labels = c('postive', 'no change', 'negative'))
 data$GDPWdiff
 
 ## Run ordered logit regression using polr() function from MAAS package
 order_reg <- polr(GDPWdiff ~ ., data = final_data, Hess = TRUE)
 summary(order_reg)
 
-# Assumptions on regression output
-# The Coefficients
+              Ordinal Regression Output 
+Call:
+  polr(formula = GDPWdiff ~ ., data = final_data, Hess = TRUE)
 
-# The Cutoff Points
+Coefficients:
+              Value   Std. Error t value
+OIL           -0.1788    0.11546  -1.549
+REG           0.4102    0.07518   5.456
 
-# Test for Significance: Calculate a p value
-ctable <- coef(summary(order_reg))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+Intercepts:
+                    Value    Std. Error t value 
+no change|negative  -5.3199   0.2523   -21.0865
+negative|positive   -0.7036   0.0476   -14.7932
 
-(ctable <- cbind(ctable, "p value" = p))
+Residual Deviance: 4686.606 
+AIC: 4694.606 
 
-# Run a final model excluding non-significant coefficients 
-final_reg <- polr(GDPWdiff ~ OIL + REG, data = data, Hess = TRUE)
-summary(final_reg)
+# Significance Test: Calculate a p value
+coef_table <- coef(summary(order_reg))
+pval <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
 
-# Exponate to get odds and make final interpretation
+(coef_table <- cbind(coef_table, "p value" = pval))
+### P values for both coefficients are significant at 1.214075e-01 and 
+# 4.875321e-08
+
+### CONVERT TO ODDS RATIO TO INTERPRET COEFFICIENTS
+# exponate coefficients
+exp((order_reg))
+large_oilex   democracy 
+0.8362455   1.5070726 
+
+# For countries that export oil exceeding 50% of GDP, the odds of there being a positive GDP-differenceversus negative
+# year-on-year is 0.84 times that of those whose oil exports do not exceed 50%, holding other variables constant.
+
+# For countries whose regime (REG) is democratic, the odds of there being a positive GDP-difference versus negative
+# year-on-year is 1.5 times that of undemocratic regimes, holding other variables constant.
+
+
 
 ######### PROBLEM 2 #########
 
-dataset <- read.csv('https://raw.githubusercontent.com/ASDS-TCD/StatsII_Spring2022/main/datasets/MexicoMuniData.csv')
-dataset
-
 # (a) Run a Poisson regression because the outcome is a count variable. Is there evidence that PAN 
   # presidential candidates visit swing districts more? Provide a test statistic and p-value.
-
+dataset <- read.csv('https://raw.githubusercontent.com/ASDS-TCD/StatsII_Spring2022/main/datasets/MexicoMuniData.csv')
+dataset
 # Outcome variable:
 # Variable PAN.visits.06 is a count variable that requires poission regression. 
 dataset$PAN.visits.06
@@ -210,8 +230,8 @@ dataset$competitive.district
 # the state has a PAN-affiliated governor) as ad-ditional control variables.
 dataset$marginality.06
 dataset$PAN.governor.06
-swing <- ifelse(dataset$competitive.district == 1, 1, 0)
-safe <- ifelse(dataset$competitive.district == 0, 1, 0)
+dataset$swing <- ifelse(dataset$competitive.district == 1, 1, 0)
+dataset$safe <- ifelse(dataset$competitive.district == 0, 1, 0)
 
 dataset <- data.frame(PAN.visits.06 = dataset$PAN.visits.06,
                          competitive = dataset$competitive.district,
@@ -222,21 +242,16 @@ dataset <- data.frame(PAN.visits.06 = dataset$PAN.visits.06,
 poisson_reg <-glm(formula = PAN.visits.06 ~ ., data = dataset,
              family = poisson)
 summary(poisson_reg)
+
 # Intercept and coefficient for marginality appear highly significant. 
+# Coefficient for competitive district variable is -0.08135. 
 
-# Do pan-presidential candidates visit swing districts more? Conclusions
+# Exponate the coefficients to make interpretation
+exp(coef(poisson_reg))
+# Exponated coefficient for districts (swing or safe) is 0.922
+# Therefore the expected difference in log count between swing districts compared to safe districts is 0.922
 
-
-#### PROVIDE T-STAT AND P-VALUE
-t <- summary(poisson_reg)$coefficients/summary(poisson_reg)$standard.errors
-t
-# P-value
-p <- (1 - pnorm(abs(t), 0, 1)) * 2
-p
-
-# Do pan-presidential candidates visit swing districts more? Conclusions
-
-
+# Therefore, it does appear that PAN candidates visit swing districts more often than safe districts. 
 
 # (b) Interpret the marginality.06 and PAN.governor.06 coefficients.
 summary(poisson_reg) 

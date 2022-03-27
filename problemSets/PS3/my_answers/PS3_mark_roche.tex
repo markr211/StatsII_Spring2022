@@ -127,7 +127,7 @@ Residual Deviance: 4678.726
 AIC: 4690.726 
  	\end{verbatim}
  
- Now, interpret the coefficients and cutoff points (i.e. the intercept). 
+ Now, interpret the coefficients and the intercepts. 
  
  	\begin{verbatim}
  1) The Coefficients
@@ -149,7 +149,7 @@ in the amount of 3.649
  
  A one-unit increase in the variable non_democracy is associated with a slight increase in log odds of being positive difference between GDP rather than no change GDP difference in the amount of 0.326
  	
- 2) The Estimated Cutoff Points:
+ 2) The Intercepts:
  
  The intercept for negative GDP diff: when all predictors are at 0, the log odds of there being negative difference between GDP rather than no change GDP difference is associated with an increase in the amount of  5.554894
  
@@ -162,7 +162,39 @@ Now, run a z-test and get a p-value to look for significance. Drop any predictor
 	
 	\item Construct and interpret an ordered multinomial logit with \texttt{GDPWdiff} as the outcome variable, including the estimated cutoff points and coefficients.
 	
+Order the outcome variable GDPWdiff as an ordered factor by levels ranging from positive to no change, to negative. Then, run an ordered logit regression using the polyr() function and summarise the output. 
+
+	\lstinputlisting[language=R, firstline=166,lastline=173]{../my_answers/PS3_mark_roche.R} 
+	 
+	 	\begin{verbatim}
+	              Ordinal Regression Output 
+	Call:
+	polr(formula = GDPWdiff ~ ., data = final_data, Hess = TRUE)
 	
+	Coefficients:
+	Value   Std. Error t value
+	OIL           -0.1788    0.11546  -1.549
+	REG           0.4102    0.07518   5.456
+	
+	Intercepts:
+										Value    Std. Error 	t value 
+	no change|negative  -5.3199   0.2523   -21.0865
+	negative|positive   -0.7036   0.0476   -14.7932
+	
+	Residual Deviance: 4686.606 
+	AIC: 4694.606 
+	\end{verbatim}
+
+The output of the model is visualised above. The coefficient for the OIL variable is -0.1788 and the coefficient for the REG variable is 0.4102. Next, a significance test can be run on each coefficient to validate these values via a p value. This is shown below. 
+
+	\lstinputlisting[language=R, firstline=192,lastline=199]{../my_answers/PS3_mark_roche.R} 
+
+Therefore, both coefficients appear significant. Now we can interpret these coefficients in English by exponating them to get the odds ratio. This is shown in code below.
+
+	\lstinputlisting[language=R, firstline=200,lastline=211]{../my_answers/PS3_mark_roche.R} 
+
+Therefore,  parts 1 and 2 to this Problem Set have run and interpreted the cutoff points and coefficients for an unordered multinomial and an ordered regression model. 
+
 \end{enumerate}
 
 \section*{Question 2} 
