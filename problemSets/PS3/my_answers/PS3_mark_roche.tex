@@ -206,12 +206,55 @@ Therefore,  parts 1 and 2 to this Problem Set have run and interpreted the cutof
 	\item [(a)]
 	Run a Poisson regression because the outcome is a count variable. Is there evidence that PAN presidential candidates visit swing districts more? Provide a test statistic and p-value.
 
+Load in the dataset and run the poisson regression. Summarise the output. The intercept and the coefficient for marginality appear highly significant.The coefficient of interest for the competitive district variable is -0.08135. 
+
+	\lstinputlisting[language=R, firstline=218,lastline=232]{../my_answers/PS3_mark_roche.R} 
+	
+\begin{verbatim}
+	Summary of Poisson Regression Model
+	
+	Deviance Residuals: 
+	Min       1Q   Median       3Q      Max  
+	-2.2309  -0.3748  -0.1804  -0.0804  15.2669  
+	
+	Coefficients:
+	Estimate Std. Error z value Pr(>|z|)    
+	(Intercept) -3.81023    0.22209 -17.156   <2e-16 ***
+	competitive -0.08135    0.17069  -0.477   0.6336    
+	marginality -2.08014    0.11734 -17.728   <2e-16 ***
+	governor    -0.31158    0.16673  -1.869   0.0617 .  
+	---
+	Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+	
+	(Dispersion parameter for poisson family taken to be 1)
+	
+	Null deviance: 1473.87  on 2406  degrees of freedom
+	Residual deviance:  991.25  on 2403  degrees of freedom
+	AIC: 1299.2
+\end{verbatim}	
+
+Finally, exponate the coefficients to make a final interpretation on the competitive district coefficient. This can determine whether PAN candidates visit competitive districts more often than safe ones. Result: Exponated coefficient for districts (swing or safe) is 0.922
+
+Therefore the expected difference in log count between swing districts compared to safe districts is 0.922
+
+Therefore, it does appear that PAN candidates visit swing districts more often than safe districts. 	
+	
+	
 	\item [(b)]
 	Interpret the \texttt{marginality.06} and \texttt{PAN.governor.06} coefficients.
-	
+
+For a one  unit increase in marginality, the difference in the logs of expected counts is expected to change by -2.08014, given the other predictors are held constant.
+
+PAN.governor.06 coefficient only slightly negatively correlated with outcome variable (-0.31) 
+
+Overall, both coefficients are negative indicting a negative relation. 
+However, unlike PAN.governor.06, the coefficient for marginality is highly significant with a p-value of >0.001
+
 	\item [(c)]
 	Provide the estimated mean number of visits from the winning PAN presidential candidate for a hypothetical district that was competitive (\texttt{competitive.district}=1), had an average poverty level (\texttt{marginality.06} = 0), and a PAN governor (\texttt{PAN.governor.06}=1).
 	
+	\lstinputlisting[language=R, firstline=254,lastline=267]{../my_answers/PS3_mark_roche.R} 
+
 \end{enumerate}
 
 \end{document}
