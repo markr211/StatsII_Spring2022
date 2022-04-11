@@ -13,10 +13,10 @@
 library(eha)
 library(survival)
 library(survminer)
-
+library(stargazer)
 # Load dataset 
 data <- eha::infants
-
+stargazer(data[1:4,], summary=FALSE, rownames=FALSE)
 # Call help file on dataset and analyse outocme and predictors
 ?eha::infants
 # Predictors: sex is a binary predictor with options boy/girl; Mothers age at infants birth a numerical 
@@ -52,43 +52,11 @@ drop1(cox_mod, test = "Chisq")
 ## Both p-values are < 0.05. There is therefore evidence that we can fail to reject the null hypothesis
 ## that the hazards are proportional.
 
-cox_fit <- survfit(cox_mod)
-autoplot(cox_fit)
-cox_fit
-## Plot the model
-ggsurvplot(survfit(cox_mod), color = "#2E9FDF",
+## Plot the fitted survival model
+ggsurvplot(survfit(cox_mod), data = data, color = "#2E9FDF",
            ggtheme = theme_minimal())
 
 
-### INRERACTION MODEL ###
-### Try an interaction between mother's age and the sex variable
-cox_interact <- coxph(Surv(exit, event) ~ age*sex, data = data)
-summary(cox_interact)
-
-### Run Chisq test
-drop1(cox_interact, test = "Chisq")
-
-### Model is not significant as p-value < 0.05
-
-Call:
-  coxph(formula = Surv(exit, event) ~ age * sex, data = data)
-
-n= 105, number of events= 21 
-
-              coef    exp(coef) se(coef)  z      Pr(>|z|)
-age         0.03092   1.03141  0.05637  0.549    0.583
-sexboy      3.34675  28.41019  2.56191  1.306    0.191
-age:sexboy -0.14706   0.86324  0.09723 -1.512    0.130
-
-          exp(coef)       exp(-coef)   lower .95      upper .95
-age           1.0314     0.9696    0.9235     1.152
-sexboy       28.4102     0.0352    0.1874  4306.996
-age:sexboy    0.8632     1.1584    0.7135     1.044
-
-Concordance= 0.621  (se = 0.063 )
-Likelihood ratio test= 3.99  on 3 df,   p=0.3
-Wald test            = 3.38  on 3 df,   p=0.3
-Score (logrank) test = 3.56  on 3 df,   p=0.3
-
-
+stargazer::ggsurvplot(survfit(cox_mod), data = data, color = "#2E9FDF",
+                      ggtheme = theme_minimal())
 

@@ -1,0 +1,238 @@
+---
+title: 'Replicating a Study that Analysed Fossil Fuel Tax Levels in 2003-2015'
+author: "Mark Roche"
+date: "11/04/22"
+output: pdf_document
+---
+
+# 1) INTRODUCTION 
+
+# Outline of Original Paper
+  - Mahdavi et al (2020) ‘Why Do Governments Tax or Subsidise Fossil Fuels?’
+
+  - Measured fossil fuel tax and subsidy levels and change between 2003-2015 and analysed     whether either varies under different political and economic settings
+  
+  - Relationship between fossil fuel tax/subsidies and political and economic factors
+
+# Data: Outcome and Predictor Variables
+  
+  - Outcome variable: Implicit Fossil fuel tax/subsidy level; measured by comparing a        country's fuel and gas prices against the international supply price of fuel. 
+ 
+  - Authors argue that if the local price is above the international supply price, it        implies that the country is likely a net taxer of oil and gas and vice-versa for         subsidisers. 
+  
+  - In other words, it is the difference between the price of fuel and the price it is to     bring the fuel to consumers, implies that a subsidy has been put in place by             government
+  
+  - Economic explanatory variables: GNI per-capita, government debt and fossil fuel         wealth. 
+  
+  - Political explanatory variables: Democracy and Government Effectiveness 
+
+
+# Testing Findings of Original Paper
+  - I analyse  explanations for  fossil fuel tax/subsidy levels in 2003-2015 via             cross-national data
+  
+  - I Do not analyse reasons for fossil fuel tax/subsidy change from 2003-15 (i.e. across time)
+  
+  - This tests two out of four major findings of original paper:
+    - Finding 1: The relationship between tax/subsidies and economic predictors is by far                 the strongest. 
+    - Finding 2: There is a weak relationship between tax/subsidies and political                         predictors. 
+    
+# Adding an Interaction Term 
+  - Particularly wishes to expand on original study by focusing on the European Union and     whether a member state's fuel wealth explained its 2003-2015 tax and subsidy levels
+  
+  - This is achieved by adding an interation term between the EU countries and fuel         wealth indicators 
+
+
+# Method 
+
+# 1) Data Collection: 
+  - Collected the Data From the Harvard Database Website
+  - Load Data into RStudio 
+  
+# 2) Data Analysis I: Analyse Expanations for Tax and Subsidy Levels
+  - Run a glm() linear regression to regress tax/subsidy levels on economic and political     predictors.
+  - Linear regression is used as the outcome is continuous
+  
+     OVERALL, RESULTS FOUND WERE QUITE SIMILAR TO ORIGINAL PAPER
+
+# 3. Data Analysis II: Analyse Whether EU Country's Wealthy From Oil and Gas Tax and         Subsidise Less
+  - Run a glm() linear regression to regress tax/subsidy change on economic and political     predictors.
+  - Linear regression used as outcome variable is continuous
+
+
+
+# 2) ANALYSIS PART I: EXPLAINING  TAX AND SUBSIDY LEVELS  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd("/Users/user/Desktop/Semester 2/Applied Stats II/Replication Project/Code")
+
+```
+
+```{r}
+# Libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Load dataset
+dataset <- read.csv('cross_national_ffs_final.csv')
+View(dataset)
+
+### 1) RUN REGRESSION MODEL ###
+## Try with glm()
+lm <- glm(meanbmgap2015adj ~ meanfuelexports+fuel_income_dependence+average_oilgas_exports_pc + 
+           meangdppc + meangdppcatlas   + gdp_ppc_gd    +  autocracy_polity  + meangoveffect +
+           avg_gov_debt  +  meanvat, data = dataset, family=gaussian(link="identity"))
+
+# Summarise the output
+summary(lm)
+```
+
+####### DATA VISUALISATION AND INTERPRETATION ####### 
+
+With the explanatory and outcome variable in place in a summarised regression, the covariates can now be interpreted and visualised using ggplot. 
+
+This can test whether findings observed in the original paper are valid. 
+
+
+# ECONOMIC PREDICTORS:
+
+# Fossil Fuel Wealth: Fuel income dependence, meanfuelexports and average oil exports per capita. 
+
+# Fuel income dependence
+  - Strongly negative correlation between fuel income dependence and net implicit gas        tax/subs
+```{r}
+ggplot(dataset, aes(fuel_income_dependence, meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+```
+
+# Average Fuel Exports 
+```{r}
+ggplot(dataset, aes(log(meanfuelexports), meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+
+```
+
+# Average Oil Exports Per Capita
+```{r}
+ggplot(dataset, aes(average_oilgas_exports_pc, meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+```
+# GNI Per Capita 
+```{r}
+ggplot(dataset, aes(log(meangdppcatlas), meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+```
+# Average Government Debt
+```{r}
+ggplot(dataset, aes(log(avg_gov_debt), meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+```
+
+
+# POLITICAL PREDICTORS
+
+# Democracy
+```{r}
+ggplot(dataset, mapping = aes(autocracy_polity, meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+```
+
+# Government Effectiveness
+```{r}
+ggplot(dataset, mapping=aes(meangoveffect, meanbmgap2015adj)) +           
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x + I(x^2),
+              geom = "smooth")
+```
+
+# INTERACTION ANALYSIS: HOW DOES THE EUROPEAN UNION VARIABLE INTERACT WITH FOSSIL FUEL WEALTH
+
+
+```{r}
+imodel1 <- glm(meanbmgap2015adj ~ fuel_income_dependence*europeanunion, data = dataset, family=gaussian(link="identity"))
+
+# Summarise the output
+summary(imodel1)
+
+ggplot(dataset, mapping=aes(fuel_income_dependence*europeanunion, meanbmgap2015adj)) +  
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+
+# Analyse interaction between avg oil exports per capita and EU members
+imodel2 <- glm(meanbmgap2015adj ~ average_oilgas_exports_pc*europeanunion, data = dataset, family=gaussian(link="identity"))
+
+summary(imodel2)
+
+ggplot(dataset, mapping=aes(meanfuelexports*europeanunion, meanbmgap2015adj)) +
+  geom_point() +                                     
+  stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+
+interaction.plot(
+x.factor = dataset$fuel_income_dependence,
+trace.factor = dataset$europeanunion,
+response = dataset$europeanunion,
+fun = median,
+ylab = "Implicity Tax and Subsidy Level",
+xlab = "EU Member",
+trace.label = "Fuel Dependence",
+col = c("#0198f9", "#f95801"),
+lyt = 1,
+lwd = 3
+)
+```
+
+# 4) CONCLUSION 
+
+# Economic Explanations of Fuel Tax and Subsidy Levels
+  - It Is Not Surpising that Fossil Fuel Wealth Indicators are Overall Negatively Correlated With Fuel and Tax Levels. 
+  
+  - Positive relationship between government debt and taxes not surprising. 
+  
+  - Somehwat positive U shaped relation between GNI per capita and taxes also not            too surprising. 
+  
+# Political Explanations of Fuel Tax and Subsidy Levels
+  -  Slightly positive relation between government effectiveness and tax and subsidy levels also not too surprising
+  
+  - Idea that Autocracies tax less than democracies also not surprising
+  
+  - Overall, finding of original paper that political predictors are not strongly correlated with tax and subsidy levels, relative to economic factors, is shown here also. 
+  
+# There appears to be no interaction between EU member oil dependency on tax/subsidy levels in 2015
+
+
+# Significance Levels
+  - Caveat that only GNI per capita, avetage fuel exports and government debt                coefficients p-values were <0.05
+  
+  - Other variables greater than 0.05
+  
+  
+# Room for Further Work 
+- Analyse the second dataset and look at tax and subsidy changes between 2003-15
+  
+  
+  
